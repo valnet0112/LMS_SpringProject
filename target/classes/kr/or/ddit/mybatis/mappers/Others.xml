@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.prod.dao.OthersDAO">
+	
+<!-- 	id:레코드 식별자, 중복 제거 기준으로 사용됨 -->
+	<resultMap type="hashmap" id="lprodMap">
+		<id property="lprodGu" column="LPROD_GU"/>
+		<result property="lprodNm" column="LPROD_NM"/>
+<!-- 	collection은 1대N 관계를 표현하는 바인드 설정 (main entity를 1의 기준으로 관계를 파악함) -->
+		<collection property="buyerList" javaType="list" ofType="hashmap">
+			<result property="buyerId" column="BUYER_ID"/>
+			<result property="buyerName" column="BUYER_NAME"/>
+		</collection>
+	</resultMap>
+
+	<select id="selectLprodList" resultMap="lprodMap" >
+		SELECT LPROD_GU, LPROD_NM, BUYER_ID, BUYER_NAME
+		FROM LPROD LEFT OUTER JOIN BUYER ON(LPROD_GU = BUYER_LGU)	
+	</select>
+	
+
+<!-- 	id는 프라이머리키로 식별자란것을 알려주기위해 id로 묶어주는것 result랑 구성은 같다 -->
+	<resultMap type="hashmap" id="buyerMap">
+		<id property="buyerId" column="BUYER_ID"/>		
+		<result property="buyerName" column="BUYER_NAME"/>
+		<result property="buyerLgu" column="BUYER_LGU"/>
+<!-- 	association은 1대1 관계 바인드 설정 -->
+		<association property="LPROD" javaType="hashmap">
+			<result property="lprodGu" column="LPROD_GU"/>		
+			<result property="lprodNm" column="LPROD_NM"/>		
+		</association>
+	</resultMap>
+		
+	<select id="selectBuyerList" resultMap="buyerMap">
+		SELECT BUYER_ID,BUYER_NAME, BUYER_LGU, LPROD_GU, LPROD_NM
+		FROM BUYER INNER JOIN LPROD ON (BUYER_LGU = LPROD_GU)
+	</select>
+</mapper>

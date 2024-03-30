@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.intro.dao.IntroDAO">
+	<select id="selectProfessorList" resultType="hashmap" parameterType="kr.or.ddit.common.paging.PaginationInfo">
+        SELECT * 
+        FROM(
+        SELECT ROWNUM RNUM,A.*
+		FROM(
+		SELECT * FROM PROFESSOR
+		ORDER BY PRO_NAME
+        ) A
+        )
+        <![CDATA[
+		WHERE RNUM >= #{startRow} AND RNUM <= #{endRow}
+		]]>
+	</select>
+	<select id="selectStudentList" resultType="hashmap" parameterType="kr.or.ddit.common.paging.PaginationInfo">
+		SELECT * 
+        FROM(
+        SELECT ROWNUM RNUM,A.*
+		FROM(
+		SELECT * FROM STUDENT
+		ORDER BY STD_NAME
+        ) A
+        )
+        <![CDATA[
+		WHERE RNUM >= #{startRow} AND RNUM <= #{endRow}
+		]]>
+	</select>
+	<select id="totalProfessor" resultType="int" parameterType="kr.or.ddit.common.paging.PaginationInfo">
+		SELECT COUNT(*)
+		FROM PROFESSOR
+	</select>
+	<select id="totalStudent" resultType="int" parameterType="kr.or.ddit.common.paging.PaginationInfo">
+		SELECT COUNT(*)
+		FROM STUDENT
+	</select>
+</mapper>

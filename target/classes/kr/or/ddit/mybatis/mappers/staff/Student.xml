@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.staff.dao.StudentDAO">
+
+	<sql id="searchFrag">
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="not detailCondition.empty">
+				<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(detailCondition.stdNo)">
+				AND INSTR(S.STD_NO, #{detailCondition.stdNo}) > 0 
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(detailCondition.stdName)">
+				AND INSTR(S.STD_NAME, #{detailCondition.stdName}) > 0 
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(detailCondition.stdId)">
+				AND INSTR(S.STD_ID, #{detailCondition.stdId}) > 0 
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(detailCondition.stdTelno)">
+				AND INSTR(S.STD_TELNO, #{detailCondition.stdTelno}) > 0 
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(detailCondition.stdAddress)">
+				AND INSTR(S.STD_ADDRESS, #{detailCondition.stdAddress}) > 0 
+				</if>
+				<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(detailCondition.stdAddress)">
+				AND INSTR(P.PRO_NAME, #{detailCondition.proName}) > 0 
+				</if>
+			</if>
+		</trim>
+	</sql>
+	
+	<resultMap type="hashmap" id="studentMap">
+		<result property="rnum" 		column="RNUM" />
+		<result property="stdNo" 		column="STD_NO" />
+		<result property="stdName"		column="STD_NAME" />
+		<result property="stdId" 		column="STD_ID" />
+		<result property="stdTelno" 	column="STD_TELNO" />
+		<result property="stdAddress" 	column="STD_ADDRESS" />
+		<result property="proNo" 		column="PRO_NO" />
+		<result property="proName" 		column="PRO_NAME" />
+		<result property="deleted" 		column="DELETED" />
+	</resultMap>
+
+	<select id="selectStudent" parameterType="String" resultMap="studentMap">
+		SELECT 
+			S.STD_NO, S.STD_NAME, S.STD_ID, S.STD_TELNO, S.STD_ADDRESS, S.PRO_NO, S.DELETED, P.PRO_NAME
+		FROM STUDENT S
+		JOIN PROFESSOR P
+		ON S.PRO_NO=P.PRO_NO
+		WHERE S.STD_NO = #{stdNo}
+	</select>
+	
+	<select id="selectStudentList" parameterType="kr.or.ddit.common.paging.PaginationInfo" resultMap="studentMap">
+		WITH ORDERED AS(
+			SELECT 
+				S.STD_NO, S.STD_NAME, S.STD_ID, S.STD_TELNO, S.STD_ADDRESS, S.PRO_NO, S.DELETED, P.PRO_NAME
+			FROM STUDENT S
+			JOIN PROFESSOR P
+			ON S.PRO_NO=P.PRO_NO
+			<include refid="searchFrag" />
+			ORDER BY S.STD_NO
+		), RNUMSTUDENT AS(
+			SELECT ORDERED.*, ROWNUM RNUM
+			FROM ORDERED
+		)
+		SELECT*
+		FROM RNUMSTUDENT
+		WHERE RNUM BETWEEN #{startRow} AND #{endRow}
+	</select>
+
+	<select id="selectTotalRecord">
+		SELECT COUNT(*)
+		FROM STUDENT S
+		<include refid="searchFrag" />
+	</select>
+
+	<update id="updateStudent" parameterType="hashmap" >
+		UPDATE
+			STUDENT
+		SET
+			STD_NAME = #{stdName, jdbcType=VARCHAR}, 
+			STD_ID = #{stdId, jdbcType=VARCHAR}, 
+			STD_TELNO = #{stdTelno, jdbcType=VARCHAR}, 
+			STD_ADDRESS = #{stdAddress, jdbcType=VARCHAR}, 
+			PRO_NO = #{proNo, jdbcType=CHAR}
+		WHERE STD_NO = #{stdNo, jdbcType=CHAR}
+	</update>
+	
+	<insert id="insertStudent" parameterType="hashmap">
+		INSERT INTO
+			STUDENT(STD_NO, STD_NAME, STD_ID, STD_TELNO, STD_ADDRESS, PRO_NO)
+		VALUES(
+			#{stdNo, jdbcType=CHAR},
+			#{stdName, jdbcType=VARCHAR}, 
+			#{stdId, jdbcType=VARCHAR}, 
+			#{stdTelno, jdbcType=VARCHAR}, 
+			#{stdAddress, jdbcType=VARCHAR}, 
+			#{proNo, jdbcType=CHAR}
+		)
+	</insert>
+	
+	<delete id="deleteStudent" parameterType="String">
+		UPDATE
+			STUDENT
+		SET
+			DELETED = 1
+		WHERE
+			STD_NO = #{stdNo}
+	</delete>
+</mapper>

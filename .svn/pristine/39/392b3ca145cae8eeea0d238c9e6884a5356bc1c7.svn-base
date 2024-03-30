@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.professor.dao.ProfessorDAO">
+	
+	<select id="loginProfessor" parameterType="string" resultType="hashmap">
+		SELECT *
+		FROM PROFESSOR
+		WHERE PRO_NO = #{PRO_NO}
+	</select>
+	
+	<select id="searchLecture" parameterType="hashmap" resultType="hashmap">
+		SELECT ROWNUM RNUM, D.SUB_NAME,C.SUB_CD,C.LEC_TIME,C.LEC_ROOM,C.PRO_NO
+		FROM(
+			SELECT * 
+			FROM LECTURE
+			WHERE PRO_NO = #{PRO_NO}
+		) C LEFT OUTER JOIN SUBJECT D ON(C.SUB_CD = D.SUB_CD)
+	</select>
+	
+	<select id="searchStudentByLecture" parameterType="hashmap" resultType="hashmap">
+		SELECT A.PRO_NO, A.SUB_CD, Y.STD_NAME, Y.STD_TELNO, Y.STD_ADDRESS, A.CLS_SCORE, Y.STD_NO
+		FROM (
+		    SELECT D.SUB_NAME, C.SUB_CD, C.LEC_TIME, C.LEC_ROOM, C.PRO_NO, B.STD_NO, B.CLS_SCORE
+		    FROM (
+		        SELECT * 
+		        FROM LECTURE
+		        WHERE PRO_NO = #{PRO_NO}
+		    ) C 
+		    LEFT OUTER JOIN SUBJECT D ON (C.SUB_CD = D.SUB_CD)
+		    INNER JOIN CLASS B ON (C.SUB_CD = B.SUB_CD)
+		) A 
+		INNER JOIN STUDENT Y ON (A.STD_NO = Y.STD_NO)
+		ORDER BY Y.STD_NAME
+	</select>
+	
+	<update id="studentScore" parameterType="hashmap">
+		UPDATE CLASS
+		SET
+		    CLS_SCORE = #{score}
+		WHERE
+		    STD_NO = #{std_no} AND SUB_CD = #{sub_cd}
+	</update>
+</mapper>

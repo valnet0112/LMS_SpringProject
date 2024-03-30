@@ -1,0 +1,92 @@
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>   
+
+
+<!-- <script type="text/javascript"> -->
+<%--	<c:if test="${not empty cnt }"> --%>
+<%-- 	alert(`${stdNo}님 ${subCd} 수강신청 완료!`) --%>
+<%--  	</c:if> --%>
+<!-- </script> -->
+
+<%-- <c:if test="${not empty cnt }"> --%>
+<!-- 	<script type="text/javascript"> -->
+<%--  		if(confirm(`${stdNo}님 ${subCd} 수강신청 완료!`)){ --%>
+			
+<%--  			location.href = ${pageContext.request.contextPath}+"/student/class.do"; --%>
+<!--  		} -->
+<!-- 	</script> -->
+<%-- </c:if> --%>
+
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>학번</th>
+			<th>과목코드</th>
+			<th>점수</th>
+			<th>등급</th>
+		</tr>
+	</thead>
+	<tbody>
+		<c:if test="${not empty scoreList }">
+			<c:forEach items="${scoreList }" var="score">
+				<tr>
+					<td>${score.stdNo}</td>
+					<td>${score.subCd}</td>
+					<td>${score.clsScore}</td>
+					<td>${score.grade}</td>
+				</tr>
+			</c:forEach>
+		</c:if>
+		
+		<c:if test="${empty scoreList }">
+			<tr>
+				<td colspan="4">조회된 성적이 없음.</td>
+			</tr>
+		</c:if>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="10">
+				<form id="submitForm" action=""> <!-- 전송용 form => 입력UI와 항상 세트 -->
+					<input type="text" name="page">
+<%-- 					<input type="text" name="prodLgu" value="${condition.prodLgu }"> --%>
+
+				</form>
+
+				<div data-pg-role="searchUI" data-pg-target="#submitForm"> <!-- 입력UI -->
+<%-- 				<select name="prodLgu" data-pg-init-value="${condition.prodLgu }"> --%>
+<!-- 					<option value>구분선택</option> -->
+<!-- 					<option value="P101">전자제품</option> -->
+<!-- 				</select> -->
+				<select name="prodBuyer" data-pg-init-value="${condition.prodBuyer }">
+					<option value>전체</option>
+					<option value="P10101">교수명</option>
+					<option value="P10101">과목명</option>
+					<option value="P10101">강의실</option>
+				</select>
+				<input type="text" name="prodName" value="${condition.prodName }">
+				<button type="button" data-pg-role="searchBtn">검색</button>
+			</div>
+				${pagingHTML }
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+<%-- <form method="post" id="regiForm" action='<c:url value="/student/insertClass.do"/>'> --%>
+<%-- 	<input type="hidden" name="stdNo" value="${stdNo }"> --%>
+<!-- 	<input type="hidden" name="formSubCd"> -->
+<!-- </form> -->
+
+<!-- <script> -->
+<!-- // 	$("[name='regiBtn']").on("click", function(){ -->
+<!-- // 		let subCdVal = $(this).data("sub-cd") -->
+<!-- // 		$("[name='formSubCd']").val(subCdVal); -->
+<!-- // 		$("#regiForm").submit(); -->
+<!-- // 		console.log(subCdVal); -->
+<!-- // 	}); -->
+<!-- </script> -->
+<script src="<c:url value='/resources/js/app/common/paging.js'/>"></script>
